@@ -91,6 +91,14 @@ an unexpected session name), VS Code is probably picking a shell profile named
 Make sure the profile name is exactly `"tmux-integrated"` in your settings,
 then reload the VS Code window.
 
+### "Timed out waiting for tmux control mode handshake"
+
+The extension started tmux but didn't get a control-mode greeting back
+within 10 seconds. The error in the *tmux-integrated* output channel includes
+the first bytes tmux sent — usually an error message that explains the
+problem. With psmux, `~/.psmux/cc_debug.log` has the server's side of the
+connection.
+
 ### Stray default-shell tab on launch
 
 VS Code's workbench can spawn an OS-default shell terminal (`/bin/zsh -il`,
