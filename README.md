@@ -96,8 +96,8 @@ then reload the VS Code window.
 The extension started tmux but didn't get a control-mode greeting back
 within 10 seconds. The error in the *tmux-integrated* output channel includes
 the first bytes tmux sent — usually an error message that explains the
-problem. With psmux, `~/.psmux/cc_debug.log` has the server's side of the
-connection.
+problem. With psmux, `~/.psmux/cc_debug.log` logs every line the control
+client sent and received.
 
 ### Stray default-shell tab on launch
 

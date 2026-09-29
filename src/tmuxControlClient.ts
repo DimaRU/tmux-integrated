@@ -163,6 +163,7 @@ export class TmuxControlClient extends EventEmitter {
     private gateway: TmuxGateway | null = null;
     private _connected = false;
     private _version: { major: number; minor: number } | null = null;
+    private _isPsmux = false;
 
     constructor(
         private readonly sessionName: string,
@@ -189,6 +190,13 @@ export class TmuxControlClient extends EventEmitter {
         if (match) {
             this._version = { major: Number(match[1]), minor: Number(match[2]) };
         }
+        // psmux reports "tmux 3.3.8\npsmux 3.3.8 (<commit> <date>)".
+        this._isPsmux = /\bpsmux\b/iu.test(versionString);
+    }
+
+    /** True when the server is psmux (native Windows tmux) rather than tmux. */
+    get isPsmux(): boolean {
+        return this._isPsmux;
     }
 
     /** Return the parsed tmux version, or null if not yet resolved. */

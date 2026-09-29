@@ -172,8 +172,22 @@ an uncaught `error` event.
 When the handshake does time out, the error includes the first bytes
 tmux sent (or "no output received"), so the output channel shows whether the
 problem is the transport, a non-control-mode error message, or silence. For
-psmux, `~/.psmux/cc_debug.log` has the server-side view of the same
-connection.
+psmux, `~/.psmux/cc_debug.log` is the `psmux -CC` client's own log: every
+line it read from our stdin (`IN`) and relayed from the server (`OUT`).
+
+### psmux: no capture-pane snapshot on adopt
+
+The `psmux -CC` client logs each server line as `&line[..line.len().min(200)]`
+before relaying it to stdout. That is a byte slice, so a line longer than
+200 bytes with a multi-byte UTF-8 character straddling byte 200 (box
+drawing, Cyrillic, …) panics the relay thread. The process stays alive and
+keeps forwarding our commands, but no response ever reaches us again: the
+health check times out, reconnects, and the next adopt kills the new
+connection the same way. `%output` is octal-escaped ASCII and can't trigger
+it; `capture-pane` returns raw UTF-8 lines of any length and does. So when
+the version string says psmux (`TmuxControlClient.isPsmux`), re-adopting a
+window skips the scrollback snapshot and the tab starts empty. Drop the
+guard once psmux slices on a char boundary.
 
 ## Where new terminal tabs come from
 

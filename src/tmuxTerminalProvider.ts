@@ -551,7 +551,14 @@ export class TmuxTerminal implements vscode.Pseudoterminal {
 
 
 
-            if (this.existingWindow) {
+            // psmux: skip the snapshot.  Its `-CC` client relays each server
+            // line to stdout after logging a byte-sliced `&line[..200]`, which
+            // panics when byte 200 falls inside a multi-byte UTF-8 character
+            // (box drawing, Cyrillic, …).  The relay thread dies, the process
+            // stays alive, and every later response is lost — the control
+            // channel goes silent.  %output is octal-escaped ASCII and safe;
+            // capture-pane returns raw UTF-8 lines and is not.
+            if (this.existingWindow && !this.client.isPsmux) {
                 // Seed the renderer with the full scrollback + visible pane
                 // contents so the user can scroll up through prior history.
                 const snapshot = await this.client.capturePane(paneId, {
