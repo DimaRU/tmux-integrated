@@ -48,6 +48,9 @@ processes still alive.
   tmux is available on Linux, macOS, and Windows via WSL.
 - If you use VS Code on Windows with **Remote - SSH** or **WSL**, tmux only
   needs to be installed on the remote or WSL side.
+- On native Windows, [psmux](https://github.com/psmux/psmux) ≥ 3.4.0 works
+  as the tmux binary. Earlier versions can hang the control connection when
+  a window with non-ASCII output is reattached.
 
 ## Getting started
 
